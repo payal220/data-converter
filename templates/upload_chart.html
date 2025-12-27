@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload Chart Image - VisualDataConverter</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+      }
+
+      .card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        background: white;
+        margin-bottom: 30px;
+      }
+
+      .upload-zone {
+        border: 3px dashed #cbd5e1;
+        border-radius: 15px;
+        padding: 60px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+      }
+
+      .upload-zone:hover,
+      .upload-zone.dragover {
+        border-color: #7c3aed;
+        background: #faf5ff;
+      }
+
+      .upload-icon {
+        font-size: 4rem;
+        color: #94a3b8;
+        margin-bottom: 20px;
+      }
+
+      #preview-container {
+        max-width: 100%;
+        margin-top: 20px;
+      }
+
+      #preview-image {
+        max-width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        border: none;
+        padding: 12px 40px;
+        border-radius: 10px;
+        font-weight: 600;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 30px;
+      }
+
+      #results {
+        display: none;
+      }
+
+      .info-badge {
+        display: inline-block;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        color: white;
+        border-radius: 20px;
+        font-weight: 600;
+        margin-bottom: 20px;
+      }
+
+      .back-button {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1000;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="/" class="btn btn-light back-button">
+      <i class="fas fa-arrow-left"></i> Back
+    </a>
+
+    <div class="container mt-5">
+      <div class="card">
+        <div class="card-body p-5">
+          <h2 class="text-center mb-4">
+            <i class="fas fa-chart-pie"></i> Upload Chart Image
+          </h2>
+          <p class="text-center text-muted mb-4">
+            Upload a chart to extract data
+          </p>
+
+          <div id="upload-section">
+            <div class="upload-zone" id="dropZone">
+              <div class="upload-icon">
+                <i class="fas fa-chart-bar"></i>
+              </div>
+              <h4>Drag & Drop your chart here</h4>
+              <p class="text-muted">or click to browse</p>
+              <input
+                type="file"
+                id="fileInput"
+                accept=".png,.jpg,.jpeg"
+                style="display: none"
+              />
+            </div>
+
+            <div id="preview-container" style="display: none">
+              <h5 class="mt-4">Preview:</h5>
+              <img id="preview-image" alt="Preview" />
+              <div class="text-center mt-3">
+                <button class="btn btn-primary btn-lg" id="processBtn">
+                  <i class="fas fa-magic"></i> Extract Data
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="loading" id="loading">
+            <div class="spinner-border text-primary"></div>
+            <h4 class="mt-3">Analyzing chart...</h4>
+          </div>
+
+          <div id="results">
+            <h3 class="mb-4">
+              <i class="fas fa-check-circle text-success"></i> Complete
+            </h3>
+
+            <div class="text-center mb-4">
+              <span class="info-badge">
+                Chart Type: <span id="chart-type">Unknown</span>
+              </span>
+            </div>
+
+            <div class="mb-4">
+              <h5>Extracted Data:</h5>
+              <div class="table-responsive">
+                <div id="data-table"></div>
+              </div>
+            </div>
+
+            <div class="text-center mt-4">
+              <button class="btn btn-success" id="download-csv">
+                <i class="fas fa-file-csv"></i> Download CSV
+              </button>
+              <button class="btn btn-secondary" onclick="location.reload()">
+                <i class="fas fa-redo"></i> New Chart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const dropZone = document.getElementById("dropZone");
+      const fileInput = document.getElementById("fileInput");
+      const previewContainer = document.getElementById("preview-container");
+      const previewImage = document.getElementById("preview-image");
+      const processBtn = document.getElementById("processBtn");
+      const loading = document.getElementById("loading");
+      const results = document.getElementById("results");
+      const uploadSection = document.getElementById("upload-section");
+
+      let selectedFile = null;
+      let extractedData = null;
+
+      dropZone.addEventListener("click", () => fileInput.click());
+
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("dragover");
+      });
+
+      dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("dragover");
+      });
+
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("dragover");
+        if (e.dataTransfer.files.length > 0) {
+          handleFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      fileInput.addEventListener("change", (e) => {
+        if (e.target.files.length > 0) {
+          handleFile(e.target.files[0]);
+        }
+      });
+
+      function handleFile(file) {
+        selectedFile = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewImage.src = e.target.result;
+          previewContainer.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      }
+
+      processBtn.addEventListener("click", async () => {
+        if (!selectedFile) return;
+
+        const formData = new FormData();
+        formData.append("chart", selectedFile);
+
+        uploadSection.style.display = "none";
+        loading.style.display = "block";
+
+        try {
+          const response = await fetch("/process-chart", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+
+          if (data.error) {
+            alert("Error: " + data.error);
+            location.reload();
+            return;
+          }
+
+          extractedData = data;
+          displayResults(data);
+        } catch (error) {
+          alert("Error: " + error.message);
+          location.reload();
+        }
+      });
+
+      function displayResults(data) {
+        loading.style.display = "none";
+        results.style.display = "block";
+
+        document.getElementById("chart-type").textContent =
+          data.chart_type.toUpperCase();
+        document.getElementById("data-table").innerHTML = data.table_html;
+      }
+
+      document.getElementById("download-csv").addEventListener("click", () => {
+        if (extractedData && extractedData.csv_file) {
+          window.location.href = `/download/${extractedData.csv_file}`;
+        }
+      });
+    </script>
+  </body>
+</html>
