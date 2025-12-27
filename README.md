@@ -192,7 +192,6 @@ Flask - Lightweight web framework
 This project is licensed under the MIT License.
 🔗 Links
 
-Live Demo: [Coming Soon]
 GitHub: https://github.com/payal220/data-converter
 
 📞 Contact
