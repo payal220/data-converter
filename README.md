@@ -16,6 +16,14 @@
 [![NumPy](https://img.shields.io/badge/NumPy-013243?style=flat&logo=numpy&logoColor=white)](https://numpy.org/)
 
 ![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)
+<!-- Main badge -->
+![Tesseract OCR](https://img.shields.io/badge/Google-Tesseract%20OCR-4285F4?style=flat&logo=google&logoColor=white)
+
+<!-- Alternative style -->
+![Google Tech](https://img.shields.io/badge/Powered%20by-Google%20Tesseract-4285F4?style=for-the-badge&logo=google&logoColor=white)
+
+<!-- With link -->
+[![Tesseract](https://img.shields.io/badge/Google-Tesseract-4285F4?style=flat&logo=google&logoColor=white)](https://github.com/tesseract-ocr/tesseract)
 
 
 # 🎯 Problem Statement
