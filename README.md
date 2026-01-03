@@ -90,22 +90,8 @@ Mac: brew install tesseract
 Linux: sudo apt-get install tesseract-ocr
 
 # 🎬 Demo
-Open your browser and navigate to: http://localhost:5000
-Image to Visuals Workflow
+https://docs.google.com/presentation/d/1TYUE19ei7ZENOCTkh_aUlzsqJyEQeT4iQg_0Kxi9ILg/edit?usp=sharing
 
-Upload table image (PNG/JPG/PDF)
-OCR extracts data automatically
-View extracted table
-Generate multiple chart types
-Download in preferred format
-
-Visuals to Table Workflow
-
-Upload chart/graph image
-AI detects chart type
-Extracts data points
-View structured table
-Export as CSV/Excel
 
 # 🛠️ Technology Stack
 Backend
@@ -207,7 +193,7 @@ This project is licensed under the MIT License.
 🔗 Links
 
 GitHub: https://github.com/payal220/data-converter
-
+Demo video: https://docs.google.com/presentation/d/1TYUE19ei7ZENOCTkh_aUlzsqJyEQeT4iQg_0Kxi9ILg/edit?usp=sharing
 📞 Contact
 For questions or feedback:
 
